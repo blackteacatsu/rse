@@ -1,0 +1,41 @@
+%addpath /home/ge151/matlab/gmt
+imname='m0806185';
+
+disp('Reading data...')
+[x,y,z]=grdread2('dm270_1626.grd');
+z=z.*1000;
+
+geo=load([imname,'.tfw']);
+a=imread([imname,'.tif']);
+a=double(a);
+X=[geo(5):geo(1):geo(5)+(size(a,2)-1)*geo(1)];
+Y=[geo(6):geo(4):geo(6)+(size(a,1)-1)*geo(4)];
+clon=textread([imname,'_clon.txt'],'CENTER_LONGITUDE = %f'); %center longitude of projected MOC image
+
+xtran=(x-clon).*3396190*pi/180.*cos(y(700)*pi/180);
+ytran=y.*3396190*pi/180;
+
+disp('Adjusting grids...')
+a2=interp2(X,Y',a,xtran,ytran');
+
+figure
+imagesc(xtran/1000,ytran/1000,a2)
+colormap(gray)
+axis equal
+axis xy
+xlabel('meters')
+ylabel('meters')
+
+figure
+imagesc(xtran,ytran,z)
+axis equal
+axis xy
+set(gca,'color','k')
+xlabel('meters')
+ylabel('meters')
+colorbar
+
+cmapmoc=parula;
+cmapmoc(1,:)=[0 0 0];
+colormap(cmapmoc)
+
