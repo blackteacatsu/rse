@@ -222,3 +222,6 @@ __marimo__/
 
 # Large Resource Files
 static
+
+# ignore practice problem sets
+hw2_arcpro 
